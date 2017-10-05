@@ -2,14 +2,15 @@ import urllib
 import json
 import datetime
 import shutil
+import os.path
 
 import dateutil
 import requests
-import pandas
-import matplotlib.pyplot as plt
+#import pandas
+#import matplotlib.pyplot as plt
 
 apiURL = 'https://api.github.com'
-tokenFile = 'token.txt'
+tokenFile = os.path.normpath(os.path.join(os.path.dirname(__file__) + '/..' , 'token.txt'))
 workshopOrgName = 'uchicago-computation-workshop'
 #This is likely to change, https://developer.github.com/v3/reactions/
 reactionsHeader = {'Accept' : 'application/vnd.github.squirrel-girl-preview'}

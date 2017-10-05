@@ -1,8 +1,5 @@
-import utils
-import sys
+from .utils import getRepos, getIssues
 import argparse
-
-workshopOrgName = 'uchicago-computation-workshop'
 
 def parseArgs():
     parser = argparse.ArgumentParser(description='Displays question likes for workshop talks')
@@ -23,10 +20,9 @@ def askForSpeaker(repos):
         else:
             return targetRepo
 
-
 def main():
     args = parseArgs()
-    repos = utils.getRepos()
+    repos = getRepos()
     if args.speaker is None:
         targetRepo = askForSpeaker(repos)
     else:
@@ -39,6 +35,7 @@ def main():
         else:
             print("{} was found in mutiple speaker's names")
             targetRepo = askForSpeaker(selection)
-    utils.getIssues(targetRepo)
+    getIssues(targetRepo)
+
 if __name__ == '__main__':
     main()
