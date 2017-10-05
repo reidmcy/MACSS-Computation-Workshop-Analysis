@@ -96,3 +96,4 @@ def getIssues(repoDict):
     issuesInfo = sorted(issuesInfo, key = lambda x : len(x['reactions']))
     for issueDat in issuesInfo:
         printIssue(issueDat)
+    print("There are {} total questions".format(len(issuesInfo)))
