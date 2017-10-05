@@ -24,7 +24,7 @@ setup(name='macss_tallies',
     'Programming Language :: Python :: 3 :: Only',
     'Topic :: Education',
     ],
-    install_requires= ['dateutil', 'requests'],
+    install_requires= ['datetime', 'requests'],
     packages = find_packages(),
     entry_points={'console_scripts': [
               'macss_tallies = macss_tallies.main:main',
