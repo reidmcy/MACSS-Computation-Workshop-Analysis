@@ -6,6 +6,7 @@ def parseArgs():
     parser.add_argument('speaker', nargs='?', default=None, help='The speaker\'s name (or at least an unique substring) or number')
     parser.add_argument('-c', '--check-api', default = False, action='store_true', help = 'Check number of API calls remaining')
     parser.add_argument('-d', '--debug', default = False, action='store_true', help = 'debug mode')
+    parser.add_argument('-t', '--tokenFile', default = None, nargs = '?', help = 'Authentication file location ')
     return parser.parse_args()
 
 def askForSpeaker(repos):
@@ -30,7 +31,7 @@ def askForSpeaker(repos):
 def main():
     """Get all the repos info, then figure which one the user wants. Finally print all the issues with their reactions"""
     args = parseArgs()
-    repos = getRepos()
+    repos = getRepos(tokenFile = args.tokenFile)
 
     remaining = checkRate()
     if args.check_api:

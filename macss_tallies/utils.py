@@ -13,7 +13,7 @@ import requests
 apiURL = 'https://api.github.com'
 
 #mostly for testing
-tokenFile = os.path.normpath(os.path.join(os.path.dirname(__file__) + '/..' , 'token.txt'))
+tokenPath = os.path.normpath(os.path.join(os.path.dirname(__file__) + '/..' , 'token.txt'))
 
 #Name of the organization, hard coded for now
 workshopOrgName = 'uchicago-computation-workshop'
@@ -31,19 +31,19 @@ emojiMapping = {
     'confused' : '😕',
 }
 
-def getGithubURL(target, headers = None):
-    """Wrapper aroung requests.get to make dealing with the GitHub API eaiser"""
-    try:
-        with open(tokenFile) as f:
-            username, token = f.readline().strip().split()
-            auth = (username, token)
-    except FileNotFoundError:
-        auth = None
-    if target.startswith('http:'):
+def getGithubURL(target, auth = None):
+    if auth is None:
+        try:
+            with open(tokenPath) as f:
+                username, token = f.readline().strip().split()
+                auth = (username, token)
+        except FileNotFoundError:
+            auth = None
+    if target.startswith('http'):
         url = target
     else:
         url = urllib.parse.urljoin(apiURL, target)
-    r = requests.get(url, auth = auth, headers = headers)
+    r = requests.get(url, auth = auth)
     if not r.ok:
         raise RuntimeError('Invalid request: {}\n{}'.format(url, r.text))
     try:
@@ -57,8 +57,13 @@ def checkRate():
     #print("reset : {}".format(datetime.datetime.fromtimestamp(rateLimiting['rate']['reset']).strftime('%H:%M')))
     return rateLimiting['rate']['remaining']
 
-def getRepos():
+def getRepos(tokenFile = None):
     """Gets the JSON for the repo and converts to a dict for each of the org's repos, then sorts by date dropping the first two since they are not for speakers"""
+    #This is not the correct way of doing this
+    #But I don't want to restructure stuff right now
+    if tokenFile is not None:
+        global tokenPath
+        tokenPath = tokenFile
     orgInfo = getGithubURL('orgs/{}'.format(workshopOrgName))
     reposInfo = getGithubURL(orgInfo['repos_url'])
     currentRepos = sorted(reposInfo, key = lambda x : dateutil.parser.parse(x['created_at']), reverse = False)[2:]
