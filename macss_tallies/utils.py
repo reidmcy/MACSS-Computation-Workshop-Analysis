@@ -31,7 +31,7 @@ emojiMapping = {
     'confused' : '😕',
 }
 
-def getGithubURL(target, auth = None):
+def getGithubURL(target, auth = None, headers = None):
     if auth is None:
         try:
             with open(tokenPath) as f:
@@ -43,7 +43,7 @@ def getGithubURL(target, auth = None):
         url = target
     else:
         url = urllib.parse.urljoin(apiURL, target)
-    r = requests.get(url, auth = auth)
+    r = requests.get(url, auth = auth, headers = headers)
     if not r.ok:
         raise RuntimeError('Invalid request: {}\n{}'.format(url, r.text))
     try:
