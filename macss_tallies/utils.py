@@ -31,7 +31,7 @@ emojiMapping = {
     'confused' : '😕',
 }
 
-def getGithubURL(target, auth = None, headers = None):
+def getGithubURL(target, auth = None, headers = None, links = False):
     if auth is None:
         try:
             with open(tokenPath) as f:
@@ -47,6 +47,11 @@ def getGithubURL(target, auth = None, headers = None):
     if not r.ok:
         raise RuntimeError('Invalid request: {}\n{}'.format(url, r.text))
     try:
+        if links:
+            links = {}
+            if r.links and len(r.links) > 0:
+                links = r.links
+            return json.loads(r.text), links
         return json.loads(r.text)
     except json.JSONDecodeError:
         return []
@@ -90,12 +95,15 @@ def printIssue(issueDat):
     print("[{}] {}".format(len(issueDat['reactions']), issueDat['reactions'])[:width])
 
 def getIssues(repoDict):
-    """This gets ans prints all the issues for a repo"""
+    """This gets and prints all the issues for a repo"""
     print("Getting questions for: {}".format(repoDict['name']))
-    issues = getGithubURL("{}/issues".format(repoDict['url']))
+    issues, links = getGithubURL("{}/issues".format(repoDict['url']), links = True)
+    while 'next' in links:
+        issuesNext, links = getGithubURL(links['next']['url'], links = True)
+        issues += issuesNext
     issuesInfo = []
     for i, issue in enumerate(issues):
-        #This we have to make one API call for each issue
+        #We have to make one API call for each issue
         print("Querying GitHub: {:.0f}%".format(i / len(issues) * 100), end = '\r')
         issuesInfo.append(getIssueInfo(issue))
     issuesInfo = sorted(issuesInfo, key = lambda x : len(x['reactions']))
